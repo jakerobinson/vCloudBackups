@@ -25,26 +25,55 @@
     )
     PROCESS
     {
-        $sourceVapp = Get-CIView -id $vapp.id
-        $vappSearch = Search-Cloud -QueryType VApp -Name $vapp.name -Property vdc,id
-        
-        # -viewlevel user (workaround for bug in PowerCLI beta build)
-        $vdc = Get-CIView -Id $vappSearch.Vdc -ViewLevel User
+        if ($PSCmdlet.ShouldProcess($vapp.name))
+        {
+            $sourceVapp = Get-CIView -id $vapp.id
+            $vappSearch = Search-Cloud -QueryType VApp -Name $vapp.name -Property vdc,id
+                        
+            $previousBackups = Get-CIVApp -name "Backup-$($vapp.name)*"
+            if ($previousBackups.count -ge $retain)
+            {
+                # delete the oldest one
+                # Metadata or name?
+                # Will have to change the code for 5.1 if we go with metadata...
 
-        $cloneParams = new-object VMware.VimAutomation.Cloud.Views.CloneVAppParams
-        $instParams = new-object VMware.VimAutomation.Cloud.Views.InstantiationParams
+                $backupTable = @()
+                $numberToRemove = $previousBackups.count - $retain
+                foreach ($previousBackup in $previousBackups)
+                {
+                    $previousBackupDate = get-date $previousBackup.name.split("-")[-1]
+                    $row = New-Object PSObject
+                    Add-Member -MemberType NoteProperty -Name name -Value $previousBackup.name -InputObject $row
+                    Add-Member -MemberType NoteProperty -Name date -Value $previousBackupDate -InputObject $row
+                    Add-Member -MemberType NoteProperty -Name id -Value $previousbackup.id -InputObject $row
+                    $backupTable += $row   
+                }
 
-        # Remove NetworkSection
-        # Need to remove NATs out of this as well due to PowerCLI bug
-        # So Ugly...Total Hack. :(
-        $instParams.section = $sourceVapp.Section | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.OvfNetworkSection]}
-        $instparams.section[2].networkconfig | %{$_.configuration.features = $_.configuration.features | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.NatService]}}
+                $toBeRemoved = $backupTable | Sort-Object date | select -First $numberToRemove
+                Write-Verbose "Removing old backups..."
+                $toBeRemoved | %{Get-Task -id ((Get-CIView -Id $_.id).Delete_Task()).id | Wait-Task}
+            
+            }
 
-        $cloneParams.InstantiationParams = $instParams
-        $cloneParams.Source = $sourceVapp.Href
-        $cloneParams.Name = "Backup-" + $vapp.name + "-" + (get-date).DateTime
+            # -viewlevel user (workaround for bug in PowerCLI beta build)
+            $vdc = Get-CIView -Id $vappSearch.Vdc -ViewLevel User
 
-        $vdc.CloneVApp($cloneParams)
+            $cloneParams = new-object VMware.VimAutomation.Cloud.Views.CloneVAppParams
+            $instParams = new-object VMware.VimAutomation.Cloud.Views.InstantiationParams
+
+            # Remove NetworkSection
+            # Need to remove NATs out of this as well due to PowerCLI bug
+            # So Ugly...Total Hack. :(
+            # This might be fixed in 5.1 R2. Need to test.
+            $instParams.section = $sourceVapp.Section | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.OvfNetworkSection]}
+            $instparams.section[2].networkconfig | %{$_.configuration.features = $_.configuration.features | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.NatService]}}
+
+            $cloneParams.InstantiationParams = $instParams
+            $cloneParams.Source = $sourceVapp.Href
+            $cloneParams.Name = "Backup-" + $vapp.name + "-" + (get-date).DateTime
+
+            Get-Task -id ($vdc.CloneVApp($cloneParams)).id | Wait-Task
+        }
     }
 }
 
@@ -91,8 +120,6 @@ function Backup-CIVM
         # I suppose the only applies if the vApp also starts with foo,
         # since we are using the vApp name in the backup as well...
         if($vapp.name -eq $backupVAppName){return}
-
-
         
         $source = New-Object VMware.VimAutomation.Cloud.Views.SourcedCompositionItemParam
         $source.Source = $vm.href
@@ -156,9 +183,8 @@ function Backup-CIVM
                 $compose.name = $backupVAppName
                 $compose.SourcedItem = $source
                 $compose.InstantiationParams = $instParams
-
-                $vdc.ExtensionData.ComposeVApp($compose)
-
+                Write-Verbose "Creating $backupVAppName vApp and Backing up VM..."
+                Get-Task -id ($vdc.ExtensionData.ComposeVApp($compose)).id | Wait-task
             }
         }
     }
