@@ -25,7 +25,6 @@ Restoring VMs and vApps must currently be done through the UI (or through the AP
 To use vCloudBackups, open Powershell (or PowerCLI) and import the module:
 
 ```Powershell
-
 Import-Module vCloudBackups.psm1
 
 ```
@@ -46,7 +45,6 @@ Connect-CIServer vcloud.example.com -org MyOrganization
 2. Get the VM, and pipe the object to Backup-CIVM and specify a number of backups to retain.
 
 ```Powershell
-
 Get-CIVM "MyVM" | Backup-CIVM -retain 3
 
 ```
@@ -56,7 +54,6 @@ Get-CIVM "MyVM" | Backup-CIVM -retain 3
 If you have multiple VMs of the same name in your Virtual Datacenter, you can specify which VM by first selecting the vApp
 
 ```Powershell
-
 Get-CIVApp "MyVApp" | Get-CIVM "MyVM" | Backup-CIVM -retain 3
 
 ```

@@ -1,4 +1,14 @@
-﻿function Backup-CIVApp
+﻿##############################################################
+# Title: vCloud Backups Module
+# Author: Jake Robinson
+# Version: 1.0
+# More Info: https://github.com/jakerobinson/vCloudBackups
+#
+# "Better than a snapshot..."
+#
+##############################################################
+
+function Backup-CIVApp
 {   
 
 <#
@@ -120,6 +130,7 @@ function Backup-CIVM
         # I suppose the only applies if the vApp also starts with foo,
         # since we are using the vApp name in the backup as well...
         if($vapp.name -eq $backupVAppName){return}
+        if($vapp.name -match "Backup-"){return}
         
         $source = New-Object VMware.VimAutomation.Cloud.Views.SourcedCompositionItemParam
         $source.Source = $vm.href
@@ -187,5 +198,41 @@ function Backup-CIVM
                 Get-Task -id ($vdc.ExtensionData.ComposeVApp($compose)).id | Wait-task
             }
         }
+    }
+}
+
+function Save-VCloudBackupConfig
+{
+    param
+    (
+        $credential = (Get-Credential),
+        $vcloudHost = (Read-Host -Prompt "Enter the vCloud Hostname"),
+        $vcloudOrg = (Read-host -Prompt "Enter your vCloud Org")
+    )
+
+    $configObject = New-Object PSObject
+    Add-Member -Name username -value $credential.UserName -InputObject $configObject -MemberType NoteProperty
+    Add-Member -Name password -Value ($credential.Password | ConvertFrom-SecureString) -InputObject $configObject -MemberType NoteProperty
+    Add-Member -Name vcloud -Value $vcloudHost -InputObject $configObject -MemberType NoteProperty
+    Add-Member -Name org -Value $vcloudOrg -InputObject $configObject -MemberType NoteProperty
+
+    $configObject | Export-Csv vCloudBackupConfig.csv
+}
+
+function Import-VCloudBackupConfig
+{
+    param
+    (
+        $configPath = $null
+    )
+
+    If (Test-Path ($configPath + "vcloudBackupConfig.csv"))
+    {
+        $configObject = Import-Csv ($configPath + "vCloudBackupConfig.csv")
+        return $configObject
+    }
+    else
+    {
+        Write-Error ("Cannot find file: " + $configPath + "vCloudBackupConfig.csv")
     }
 }
