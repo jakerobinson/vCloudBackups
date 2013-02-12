@@ -26,7 +26,6 @@ To use vCloudBackups, open Powershell (or PowerCLI) and import the module:
 
 ```Powershell
 Import-Module vCloudBackups.psm1
-
 ```
 
 The following (cmdlets) are now available:
@@ -36,7 +35,7 @@ The following (cmdlets) are now available:
 
 To backup a VM:
 
-1. Connect to your vCloud Organization.
+1. Connect to your vCloud Organization. This will prompt for credentials.
 
 ```Powershell
 Connect-CIServer vcloud.example.com -org MyOrganization
@@ -46,7 +45,6 @@ Connect-CIServer vcloud.example.com -org MyOrganization
 
 ```Powershell
 Get-CIVM "MyVM" | Backup-CIVM -retain 3
-
 ```
 *Note:*VM Backups are currently done in serial. No parallel VM backup at this time.
 
@@ -55,7 +53,6 @@ If you have multiple VMs of the same name in your Virtual Datacenter, you can sp
 
 ```Powershell
 Get-CIVApp "MyVApp" | Get-CIVM "MyVM" | Backup-CIVM -retain 3
-
 ```
 
 ## Help
