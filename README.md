@@ -11,7 +11,7 @@ This release should work with any vCloud Provider running 1.5 or 5.1.
 vCloud Backups takes a running vApp or Virtual Machine and makes a hot clone of the source.
 
 * VApp backups are cloned to another VApp named *Backup-\<VApp Name\>-\<Backup Date and Time\>*
-* VM backups are cloned to a VApp called *Backups* and are named *\<Source VApp Name\>-\<VM Name\>-\<Backup Date and Time\>
+* VM backups are cloned to a VApp called *Backups* and are named *\<Source VApp Name\>-\<VM Name\>-\<Backup Date and Time\>*
 
 Restoring VMs and vApps must currently be done through the UI (or through the API if one was so inclined to automate restores)
 
