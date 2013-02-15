@@ -92,8 +92,10 @@ Scheduling backups can be done using task scheduler on any Windows machine that 
 10. Action to perform: *Start a Program*
 
 11. Program/Script box:
-
+    
+    ```
     powershell -file "C:\path\to\vcloudBackups\MyBackups.ps1" -setexecutionpolicy unrestricted
+    ```
 
 12. You can fine tune the task as needed by editing the properties of the scheduled task.
 
