@@ -1,8 +1,15 @@
-﻿# Import Backup module, configs and connect to vCloud!
-# This assumes the module is in the same folder
-Import-Module .\vCloudBackups.psm1
+Add-PSSnapin vmware.vimautomation.cloud -ErrorAction SilentlyContinue
 
-$myVCloudConfig = Import-VCloudBackupConfig $configPath
+# Core snapin needed for Get-Task if not using PowerCLI for vCloud Tenants
+Add-PSSnapin vmware.vimautomation.core -ErrorAction SilentlyContinue
+
+# Import Backup module, configs and connect to vCloud!
+# This assumes the module is in the same folder
+$myPath = $MyInvocation.MyCommand.Definition | Split-Path
+Import-Module ($myPath + "\vCloudBackups.psm1")
+
+
+$myVCloudConfig = Import-VCloudBackupConfig $myPath
 $credential = New-Object System.Management.Automation.PSCredential($myVCloudConfig.username,($MyVCloudCOnfig.password | ConvertTo-SecureString))
 
 Connect-CIServer $MyVCloudConfig.vcloud -org $MyVCloudCOnfig.org -Credential $credential
@@ -16,11 +23,11 @@ Connect-CIServer $MyVCloudConfig.vcloud -org $MyVCloudCOnfig.org -Credential $cr
 
 # Backup VApp Example
 # Retain 1 copy, and don't prompt for confirmation
-Get-CIVApp ts | Backup-CIVApp -retain 1 -Confirm:$false
+Get-CIVApp ExampleVApp | Backup-CIVApp -retain 1 -Confirm:$false
 
 # Backup VM Example
 # Retain 3 copies, and don't prompt for confirmation
-Get-CIVM WebServer | Backup-CIVM -retain 3 -Confirm:$false
+Get-CIVM ExampleVM | Backup-CIVM -retain 3 -Confirm:$false
 
 
 # Disconnect

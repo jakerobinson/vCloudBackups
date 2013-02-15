@@ -82,7 +82,10 @@ function Backup-CIVApp
             $cloneParams.Source = $sourceVapp.Href
             $cloneParams.Name = "Backup-" + $vapp.name + "-" + (get-date).DateTime
 
-            Get-Task -id ($vdc.CloneVApp($cloneParams)).id | Wait-Task
+            # Unfortunately cloneVApp() does not return a task, I'll have to do something fancy.
+            # For now though, just clone it...
+            # Get-Task -id ($vdc.CloneVApp($cloneParams)).id | Wait-Task
+            $vdc.CloneVApp($cloneParams)
         }
     }
 }
@@ -228,7 +231,7 @@ function Import-VCloudBackupConfig
 
     If (Test-Path ($configPath + "vcloudBackupConfig.csv"))
     {
-        $configObject = Import-Csv ($configPath + "vCloudBackupConfig.csv")
+        $configObject = Import-Csv ($configPath + "\vCloudBackupConfig.csv")
         return $configObject
     }
     else
