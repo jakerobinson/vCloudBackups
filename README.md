@@ -72,12 +72,10 @@ Scheduling backups can be done using task scheduler on any Windows machine that 
 2. Login as the user who the scheduled task will be running as.
 3. Open Powershell and change your folder to where the vCloudBackup files are located.
 4. Run the following:
-
    ```Powershell
    Import-Module .\vCloudBackups.psm1
     Save-VCloudBackupConfig
    ```
-
 5. Enter your username and password in the dialog box.
 6. Enter the vCloud hostname and your Org in the Powershell console.
 7. The configuration will be saved in a CSV file in the folder as vCloudBackupConfig.csv.
