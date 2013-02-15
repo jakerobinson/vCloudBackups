@@ -35,7 +35,7 @@ The following (cmdlets) are now available:
 * Save-VCloudBackupConfig
 * Import-VCloudBackupConfig
 
-To backup a VM:
+### To backup a VM:
 
 1. Connect to your vCloud Organization. This will prompt for credentials.
    ```Powershell
@@ -92,6 +92,7 @@ Scheduling backups can be done using task scheduler on any Windows machine that 
 10. Action to perform: *Start a Program*
 
 11. Program/Script box:
+
     powershell -file "C:\path\to\vcloudBackups\MyBackups.ps1" -setexecutionpolicy unrestricted
 
 12. You can fine tune the task as needed by editing the properties of the scheduled task.
