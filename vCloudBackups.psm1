@@ -229,13 +229,13 @@ function Import-VCloudBackupConfig
         $configPath = $null
     )
 
-    If (Test-Path ($configPath + "vcloudBackupConfig.csv"))
+    If (Test-Path ($configPath + "\vcloudBackupConfig.csv"))
     {
         $configObject = Import-Csv ($configPath + "\vCloudBackupConfig.csv")
         return $configObject
     }
     else
     {
-        Write-Error ("Cannot find file: " + $configPath + "vCloudBackupConfig.csv")
+        Write-Error ("Cannot find file: " + $configPath + "\vCloudBackupConfig.csv")
     }
 }
