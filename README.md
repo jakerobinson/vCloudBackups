@@ -44,9 +44,9 @@ To backup a VM:
 
 2. Get the VM, and pipe the object to Backup-CIVM and specify a number of backups to retain.
 
-```Powershell
-Get-CIVM "MyVM" | Backup-CIVM -retain 3
-```
+   ```Powershell
+   Get-CIVM "MyVM" | Backup-CIVM -retain 3
+   ```
 **Note:** VM Backups are currently done in serial.
 
 If you have multiple VMs of the same name in your Virtual Datacenter, you can specify which VM by first selecting the vApp
@@ -69,7 +69,7 @@ Scheduling backups can be done using task scheduler on any Windows machine that 
 
 1. It is recommended you save all files in a single folder in this version.
 
-2. Login as the user who the scheduled task will be running as.
+2. **Important:** Login as the user who the scheduled task will be running as.
 
 3. Open Powershell and change your folder to where the vCloudBackup files are located.
 
@@ -87,9 +87,14 @@ Scheduling backups can be done using task scheduler on any Windows machine that 
 
 8. Open Windows Task Scheduler.
 
-9. Create a new task ...
+9. Create Basic Task.
 
-10. ...TBD
+10. Action to perform: *Start a Program*
+
+11. Program/Script box:
+    powershell -file "C:\path\to\vcloudBackups\MyBackups.ps1" -setexecutionpolicy unrestricted
+
+12. You can fine tune the task as needed by editing the properties of the scheduled task.
 
 
 
