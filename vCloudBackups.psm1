@@ -143,6 +143,8 @@ function Backup-CIVM
         $source.InstantiationParams.Section = $vm.ExtensionData.Section | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.NetworkConnectionSection]}
         $source.InstantiationParams.Section = $source.InstantiationParams.Section | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.OvfProductSection]}
         $source.InstantiationParams.Section = $source.InstantiationParams.Section | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.RuntimeInfoSection]}
+        # Remove Guest Customization section due to PowerCLI bug
+        $source.InstantiationParams.Section = $source.InstantiationParams.Section | where {$_ -isnot [VMware.VimAutomation.Cloud.Views.GuestCustomizationSection]}
         $source.InstantiationParams.Section[0].item = $source.InstantiationParams.Section[0].item | where {$_.resourcetype.value -ne "10"}
 
         $instParams = New-Object VMware.VimAutomation.Cloud.Views.InstantiationParams

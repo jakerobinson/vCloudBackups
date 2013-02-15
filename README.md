@@ -73,7 +73,7 @@ Scheduling backups can be done using task scheduler on any Windows machine that 
 
 3. Open Powershell and change your folder to where the vCloudBackup files are located.
 
-4. Run the following:
+4. Run the following. (Note: You might have to Set your [execution policy](http://technet.microsoft.com/en-us/library/ee176961.aspx) if this is your first time using Powershell.)
 
    ```Powershell
    Import-Module .\vCloudBackups.psm1
