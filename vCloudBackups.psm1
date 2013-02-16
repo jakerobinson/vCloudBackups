@@ -82,10 +82,8 @@ function Backup-CIVApp
             $cloneParams.Source = $sourceVapp.Href
             $cloneParams.Name = "Backup-" + $vapp.name + "-" + (get-date).DateTime
 
-            # Unfortunately cloneVApp() does not return a task, I'll have to do something fancy.
-            # For now though, just clone it...
-            # Get-Task -id ($vdc.CloneVApp($cloneParams)).id | Wait-Task
-            $vdc.CloneVApp($cloneParams)
+            # Testing Get-Task with CloneVApp()
+            Get-task -id ($vdc.CloneVApp($cloneParams)).Tasks.Task[0].id | Wait-Task
         }
     }
 }
@@ -200,7 +198,7 @@ function Backup-CIVM
                 $compose.SourcedItem = $source
                 $compose.InstantiationParams = $instParams
                 Write-Verbose "Creating $backupVAppName vApp and Backing up VM..."
-                Get-Task -id ($vdc.ExtensionData.ComposeVApp($compose)).id | Wait-task
+                Get-Task -id ($vdc.ExtensionData.ComposeVApp($compose)).tasks.task[0].id | Wait-task
             }
         }
     }
